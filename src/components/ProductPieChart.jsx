@@ -39,6 +39,30 @@ const ProductPieChart = ({ data }) => {
     return null;
   };
 
+  const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = outerRadius + 30; 
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+   
+    if (percent < 0.03) return null;
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill="#374151"
+        textAnchor={x > cx ? 'start' : 'end'}
+        dominantBaseline="central"
+        fontSize={11}
+        fontWeight="500"
+      >
+        {`${(percent * 100).toFixed(1)}%`}
+      </text>
+    );
+  };
+
 
   if (!data || data.length === 0) {
     return (
@@ -63,6 +87,8 @@ const ProductPieChart = ({ data }) => {
             data={dataWithTotal}
             cx="50%"
             cy="50%"
+            labelLine={false}
+            label={renderCustomizedLabel}
             outerRadius={100}
             fill="#8884d8"
             dataKey="value"
