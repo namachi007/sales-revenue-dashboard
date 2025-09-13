@@ -4,6 +4,7 @@ import {
   Line,
   XAxis,
   YAxis,
+  Tooltip,
   CartesianGrid,
   Legend,
   ResponsiveContainer,
@@ -19,7 +20,22 @@ const SalesLineChart = ({ data }) => {
     }).format(value);
   };
 
-  
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-4 border border-gray-200 rounded-lg shadow-lg">
+          <p className="font-semibold text-gray-900">{`Month: ${label}`}</p>
+          {payload.map((entry, index) => (
+            <p key={index} style={{ color: entry.color }} className="text-sm">
+              {`${entry.name}: ${formatCurrency(entry.value)}`}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
 
   if (!data || data.length === 0) {
     return (
@@ -54,6 +70,7 @@ const SalesLineChart = ({ data }) => {
             tickFormatter={formatCurrency}
           />
           <Legend />
+          <Tooltip content={<CustomTooltip />} />
           <Line
             type="monotone"
             dataKey="sales"
