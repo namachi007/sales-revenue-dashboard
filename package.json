@@ -1,6 +1,7 @@
 {
   "name": "sales_and_revenue",
   "version": "0.1.0",
+  "author": "Namasivayam",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
