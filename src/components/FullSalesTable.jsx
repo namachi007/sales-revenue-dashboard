@@ -7,6 +7,65 @@ const FullSalesTable = ({ data }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const itemsPerPage = 10;
 
+    const formatCurrency = value => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value);
+  };
+
+  const formatDate = dateString => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  };
+
+ 
+  const filteredAndSortedData = useMemo(() => {
+    let filtered = [...data]; 
+
+
+    if (searchTerm) {
+      filtered = data.filter(item =>
+        Object.values(item).some(value =>
+          value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }
+
+   
+    const sortedData = [...filtered].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+
+      
+      if (sortField === 'date') {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      } else if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+    return sortedData;
+  }, [data, searchTerm, sortField, sortDirection]
+  );
+
+ 
+  const totalPages = Math.ceil(filteredAndSortedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentData = filteredAndSortedData.slice(startIndex, endIndex);
+
 
 
   const handleSort = field => {
@@ -81,9 +140,64 @@ const FullSalesTable = ({ data }) => {
             </tr>
           </thead>
           <tbody className="tsgit bg-white mr-8">
+            {currentData.map(row => (
+              <tr
+                key={row.id}
+                className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  #{row.id}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {formatDate(row.date)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {row.salesRepresentative}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{row.client}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {row.product}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {row.unitsSold.toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                  {formatCurrency(row.revenue)}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {formatCurrency(row.target)}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+      
+{totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="hidden sm:flex space-x-2">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const pageNumber = i + Math.max(1, currentPage - 2);
+              if (pageNumber > totalPages) return null;
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => setCurrentPage(pageNumber)}
+                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md ${
+                    currentPage === pageNumber
+                      ? 'z-10 bg-blue-600 text-white border-blue-600'
+                      : 'text-gray-700 bg-white border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+          </div>  
+        </div>
+      )}
     </div>
   );
 };
