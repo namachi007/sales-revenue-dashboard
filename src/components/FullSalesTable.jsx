@@ -213,6 +213,10 @@ const FullSalesTable = ({ data }) => {
           </button>  
         </div>
       )}
+      <div className="text-sm text-gray-600">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredAndSortedData.length)} of{' '}
+            {filteredAndSortedData.length} records
+      </div>
     </div>
   );
 };
