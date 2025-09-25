@@ -2,6 +2,10 @@
 
 A modern, professional dashboard built with React, Redux, and Tailwind CSS to visualize and analyze sales performance data.
 
+## Live Demo
+
+[Link](https://sales-revenue-dashboard.vercel.app/) 
+
 
 ## Features
 
